@@ -15,35 +15,38 @@ class Movies extends Component {
         this.state = {
             movies: [],
             search: '',
-            totalPages: '',
+            totalPages: 0,
             nextPage: {
-                selected: 0
+                selected: 1
             },
             term: ''
         }
     }
 
     updatePage(currentPage) {
-        this.setState({nextPage: currentPage});
+        const proxPage = {
+            selected: parseInt(currentPage.selected) + 1
+        };
+        this.setState({nextPage: proxPage});
     }
 
     updateTerm(searchTerm) {
         this.setState({term: searchTerm});
     }
 
-    componentWillUpdate(nextProps, nextState) {
-        this.movieSearch(nextState);
-    }
-
     movieSearch(nextState) {
         axios.get('https://jsonmock.hackerrank.com/api/movies/search/?Title=' + nextState.term + '&page=' + nextState.nextPage.selected)
             .then(response => {
                 this.state.movies = response.data.data;
-                this.state.totalPages = response.data.total_pages;
+                this.state.totalPages = parseInt(response.data.total_pages);
                 if (nextState.term !== this.state.term) {
-                    this.state.nextPage.selected = 0;
+                    this.state.nextPage.selected = 1;
                 }
             });
+    }
+
+    componentWillUpdate(nextProps, nextState) {
+        this.movieSearch(nextState);
     }
 
     render () {
