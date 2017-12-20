@@ -1,7 +1,5 @@
 import React from 'react';
 
-import './MoviesList.css';
-
 var divStyle = {
     width: '309px',
     height: '458px'

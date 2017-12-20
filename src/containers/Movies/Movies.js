@@ -4,7 +4,6 @@ import axios from 'axios';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import MoviesList from '../../components/MoviesList/MoviesList';
 import Pagination from '../../components/Pagination/Pagination';
-import './Movies.css';
 
 class Movies extends Component {
     constructor() {
