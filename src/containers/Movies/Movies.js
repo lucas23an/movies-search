@@ -9,30 +9,35 @@ import './Movies.css';
 class Movies extends Component {
     state = {
         movies: [],
-        search: ''
+        search: '',
+        totalPages: ''
     }
 
     movieSearch(term) {
         axios.get('https://jsonmock.hackerrank.com/api/movies/search/?Title=' + term)
             .then(response => {
                 this.setState({movies: response.data.data});
+                this.setState({totalPages: response.data.total_pages});
             });
     }
 
     render () {
         const movies = this.state.movies.map(movie => {
-            return <MoviesList key={movie.imdbID} title={movie.Title} />
+            return <MoviesList key={movie.imdbID} title={movie.Title} poster={movie.Poster} type={movie.Type} year={movie.Year} />
         });
 
         const movieSearch = (term) => { this.movieSearch(term)}
         return (
-            <div>
+            <div className="container">
                 <section>
                     <SearchBar onSearchTermChange={ movieSearch } />
                 </section>
-                <section>
+                <div className="row">
                     {movies}
-                </section>
+                </div>
+                <div className="row">
+                    <Pagination />
+                </div>
             </div>
         );
     }
