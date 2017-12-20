@@ -7,17 +7,43 @@ import Pagination from '../../components/Pagination/Pagination';
 import './Movies.css';
 
 class Movies extends Component {
-    state = {
-        movies: [],
-        search: '',
-        totalPages: ''
+    constructor() {
+        super();
+        this.movieSearch = this.movieSearch.bind(this);
+        this.updatePage = this.updatePage.bind(this);
+        this.updateTerm = this.updateTerm.bind(this);
+
+        this.state = {
+            movies: [],
+            search: '',
+            totalPages: '',
+            nextPage: {
+                selected: 0
+            },
+            term: ''
+        }
     }
 
-    movieSearch(term) {
-        axios.get('https://jsonmock.hackerrank.com/api/movies/search/?Title=' + term)
+    updatePage(currentPage) {
+        this.setState({nextPage: currentPage});
+    }
+
+    updateTerm(searchTerm) {
+        this.setState({term: searchTerm});
+    }
+
+    componentWillUpdate(nextProps, nextState) {
+        this.movieSearch(nextState);
+    }
+
+    movieSearch(nextState) {
+        axios.get('https://jsonmock.hackerrank.com/api/movies/search/?Title=' + nextState.term + '&page=' + nextState.nextPage.selected)
             .then(response => {
-                this.setState({movies: response.data.data});
-                this.setState({totalPages: response.data.total_pages});
+                this.state.movies = response.data.data;
+                this.state.totalPages = response.data.total_pages;
+                if (nextState.term !== this.state.term) {
+                    this.state.nextPage.selected = 0;
+                }
             });
     }
 
@@ -26,17 +52,18 @@ class Movies extends Component {
             return <MoviesList key={movie.imdbID} title={movie.Title} poster={movie.Poster} type={movie.Type} year={movie.Year} />
         });
 
-        const movieSearch = (term) => { this.movieSearch(term)}
         return (
-            <div className="container">
+            <div className="scrollspy">
                 <section>
-                    <SearchBar onSearchTermChange={ movieSearch } />
+                    <SearchBar updateTerm={this.updateTerm} />
                 </section>
                 <div className="row">
-                    {movies}
+                    <div className="col s12 center mb-7">
+                        {movies}
+                    </div>
                 </div>
                 <div className="row">
-                    <Pagination />
+                    <Pagination total_pages={this.state.totalPages} updatePage={this.updatePage}/>
                 </div>
             </div>
         );
